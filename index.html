@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PDF → Markdown · markitdown in your browser</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='18' font-size='16'%3E%F0%9F%93%84%E2%86%92%F0%9F%93%9D%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Convert PDF files to Markdown entirely in your browser. Powered by Microsoft markitdown running as WebAssembly via Pyodide. Files never leave your device." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="hdr">
+      <h1>PDF <span class="arrow">→</span> Markdown</h1>
+      <p class="sub">
+        Powered by <a href="https://github.com/microsoft/markitdown" rel="noopener" target="_blank">Microsoft&nbsp;markitdown</a>
+        compiled to <strong>WebAssembly</strong> (<a href="https://pyodide.org" rel="noopener" target="_blank">Pyodide</a>).
+        100% client-side — your files never leave this device.
+      </p>
+    </header>
+
+    <section id="drop" class="drop" aria-label="Drop a PDF here">
+      <input id="file" type="file" accept=".pdf,application/pdf" hidden />
+      <div class="drop-inner">
+        <svg viewBox="0 0 24 24" width="44" height="44" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 0v6h6M9 13h6M9 17h6M9 9h2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p><strong>Drop a PDF here</strong> or <button id="browse" class="linkbtn" type="button">browse</button></p>
+        <p id="fname" class="fname" hidden></p>
+        <button id="convert" class="btn primary" type="button" disabled>Convert to Markdown</button>
+      </div>
+    </section>
+
+    <section class="status" aria-live="polite">
+      <div id="bar" class="bar" hidden><i id="barfill"></i></div>
+      <p id="msg" class="msg">Warming up the WebAssembly engine… <span class="dim">(first visit downloads ~25 MB, then it is cached by your browser)</span></p>
+    </section>
+
+    <section id="out" class="out" hidden>
+      <div class="outbar">
+        <span id="statline" class="dim"></span>
+        <span class="spacer"></span>
+        <button id="copy" class="btn" type="button">Copy</button>
+        <button id="download" class="btn" type="button">Download .md</button>
+      </div>
+      <pre id="result"><code></code></pre>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Runs <a href="https://github.com/microsoft/markitdown" rel="noopener" target="_blank">markitdown</a> (Python) inside <a href="https://pyodide.org" rel="noopener" target="_blank">Pyodide</a> (CPython → WebAssembly). PDF layout &amp; tables are extracted with <a href="https://github.com/jsvine/pdfplumber" rel="noopener" target="_blank">pdfplumber</a>/<a href="https://github.com/pdfminer/pdfminer.six" rel="noopener" target="_blank">pdfminer.six</a>.</p>
+  </footer>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
