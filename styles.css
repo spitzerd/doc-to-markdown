@@ -45,6 +45,7 @@ body {
 .drop-inner svg { color: var(--accent); }
 .drop-inner p { margin: 10px 0 4px; }
 .fname { color: var(--dim); font-size: 14px; }
+.formats { font-size: 13px; letter-spacing: .2px; }
 
 .linkbtn {
   background: none; border: none; padding: 0;

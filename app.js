@@ -18,10 +18,19 @@ const PHASES = {
   "loading-packages": ["Loading native WASM packages…", 28],
   "installing-markitdown": ["Fetching markitdown…", 45],
   "initializing": ["Starting markitdown…", 58],
-  "ready": ["Ready. Drop a PDF and hit Convert.", 100],
+  "ready": ["Ready. Drop a file and hit Convert.", 100],
   "converting": ["Converting…", null],
   "not-ready": ["Engine is still warming up — one moment…", null],
 };
+
+// Extensions markitdown's built-in converters handle fully client-side under
+// Pyodide. Audio/video, image OCR and URL sources (YouTube, RSS, Wikipedia)
+// are intentionally excluded — they need native binaries or network calls that
+// don't exist in the browser sandbox.
+const ACCEPT = [
+  "pdf", "docx", "pptx", "xlsx", "xls", "msg", "zip", "epub",
+  "html", "htm", "csv", "json", "xml", "ipynb", "txt", "md",
+];
 
 let pickedFile = null;
 let workerOk = false;
@@ -89,10 +98,15 @@ function fmtBytes(n) {
   return n < 1024 ? n + " B" : n < 1048576 ? (n / 1024).toFixed(1) + " KB" : (n / 1048576).toFixed(1) + " MB";
 }
 
+function extOf(name) {
+  const m = /\.([a-z0-9]+)$/i.exec(name || "");
+  return m ? m[1].toLowerCase() : "";
+}
+
 function pick(file) {
   if (!file) return;
-  if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
-    fail("Please choose a PDF file.");
+  if (!ACCEPT.includes(extOf(file.name))) {
+    fail(`Unsupported file type. Supported: ${ACCEPT.map((e) => "." + e).join(", ")}.`);
     return;
   }
   pickedFile = file;
@@ -123,7 +137,10 @@ convertBtn.onclick = async () => {
   say(PHASES["converting"][0], null);
   msg.classList.remove("error");
   const buf = await pickedFile.arrayBuffer();
-  worker.postMessage({ type: "convert", buffer: buf }, [buf]);
+  worker.postMessage(
+    { type: "convert", buffer: buf, extension: "." + extOf(pickedFile.name) },
+    [buf]
+  );
 };
 
 copyBtn.onclick = async () => {
@@ -148,7 +165,7 @@ downloadBtn.onclick = () => {
   const blob = new Blob([text], { type: "text/markdown" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = pickedFile ? pickedFile.name.replace(/\.pdf$/i, "") + ".md" : "document.md";
+  a.download = pickedFile ? pickedFile.name.replace(/\.[a-z0-9]+$/i, "") + ".md" : "document.md";
   a.click();
   URL.revokeObjectURL(a.href);
 };
