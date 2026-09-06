@@ -8,7 +8,7 @@ It runs [Microsoft **markitdown**](https://github.com/microsoft/markitdown)
 (Python) inside [**Pyodide**](https://pyodide.org) — CPython compiled to
 WebAssembly — and lets markitdown's own built-in converters do the work.
 
-Live site: deployed via GitHub Pages from this repository.
+Live site: https://spitzerd.github.io/doc-to-markdown/
 
 ## Supported formats
 
